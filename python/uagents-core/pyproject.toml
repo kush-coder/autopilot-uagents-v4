@@ -1,0 +1,72 @@
+[project]
+name = "uagents-core"
+version = "0.4.12"
+description = "Core components for agent based systems"
+authors = [
+    { name = "Ed FitzGerald", email = "edward.fitzgerald@fetch.ai" },
+    { name = "James Riehl", email = "james.riehl@fetch.ai" },
+    { name = "Alejandro Morales", email = "alejandro.madrigal@fetch.ai" },
+    { name = "Florian Wilde", email = "florian.wilde@fetch.ai" },
+    { name = "Attila Bagoly", email = "attila.bagoly@fetch.ai" },
+    { name = "Devon Bleibtrey", email = "devon.bleibtrey@flockx.io" },
+]
+license = { text = "Apache 2.0" }
+readme = "README.md"
+requires-python = ">=3.10,<4.0"
+dependencies = [
+    "pydantic (>=2.8,<3.0)",
+    "bech32 (>=1.2.0,<2.0)",
+    "ecdsa (>=0.19.0,<1.0)",
+    "httpx (>=0.28.1,<0.29.0)",
+    "requests (>=2.32.3,<3.0)",
+]
+
+[project.urls]
+homepage = "https://fetch.ai"
+repository = "https://github.com/fetchai/uAgents"
+documentation = "https://fetch.ai/docs"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.11.0,<0.12",
+    "pre-commit>=4.1.0,<5",
+    "pytest>=8.3.5,<9",
+    "pytest-asyncio>=0.25.3,<0.26",
+    "coverage[toml]>=7.6.12,<8",
+]
+
+[project.scripts]
+av = "uagents_core.agentverse.cli.__main__:main"
+
+[build-system]
+requires = ["hatchling>=1.26.0"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["uagents_core"]
+
+[tool.ruff]
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    # pycodestyle (Errors, Warnings)
+    "E",
+    "W",
+    # Pyflakes
+    "F",
+    # flake8-bugbear
+    "B",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+    # pep8-naming
+    "N",
+    # pylint
+    "PL",
+]
+ignore = ["PLR0913", "PLR0912", "PLR0911", "PLR2004", "PLR0915"]
+
+[tool.ruff.lint.pycodestyle]
+max-line-length = 100

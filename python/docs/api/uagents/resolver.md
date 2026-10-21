@@ -1,0 +1,333 @@
+
+
+# src.uagents.resolver
+
+Endpoint Resolver.
+
+
+
+#### is_valid_prefix[↗](https://github.com/fetchai/uAgents/blob/main/python/src/uagents/resolver.py#L59)
+```python
+def is_valid_prefix(prefix: str) -> bool
+```
+
+Check if the given string is a valid prefix.
+
+**Arguments**:
+
+- `prefix` _str_ - The prefix to be checked.
+  
+
+**Returns**:
+
+- `bool` - True if the prefix is valid; False otherwise.
+
+
+
+#### query_record[↗](https://github.com/fetchai/uAgents/blob/main/python/src/uagents/resolver.py#L73)
+```python
+def query_record(agent_address: str, network: AgentNetwork) -> dict
+```
+
+Query an agent record from the Almanac contract.
+
+**Arguments**:
+
+- `agent_address` _str_ - The address of the agent.
+- `network` _AgentNetwork_ - The network to query (mainnet or testnet).
+  
+
+**Returns**:
+
+- `dict` - The query result.
+
+
+
+#### get_agent_address[↗](https://github.com/fetchai/uAgents/blob/main/python/src/uagents/resolver.py#L96)
+```python
+def get_agent_address(name: str, network: AgentNetwork) -> str | None
+```
+
+Get the agent address associated with the provided domain from the name service contract.
+
+**Arguments**:
+
+- `name` _str_ - The name to query.
+- `network` _AgentNetwork_ - The network to query (mainnet or testnet).
+  
+
+**Returns**:
+
+  str | None: The associated agent address if found.
+
+
+
+#### build_identifier[↗](https://github.com/fetchai/uAgents/blob/main/python/src/uagents/resolver.py#L122)
+```python
+def build_identifier(prefix: str | None = None,
+                     name: str | None = None,
+                     address: str | None = None) -> str
+```
+
+Build an agent identifier string from prefix, name, and address.
+
+**Arguments**:
+
+- `prefix` _str_ - The prefix to be used in the identifier.
+- `name` _str_ - The name to be used in the identifier.
+- `address` _str_ - The address to be used in the identifier.
+  
+
+**Returns**:
+
+- `str` - The constructed identifier string.
+
+
+
+#### almanac_api_get[↗](https://github.com/fetchai/uAgents/blob/main/python/src/uagents/resolver.py#L152)
+```python
+async def almanac_api_get(
+    session: aiohttp.ClientSession,
+    url: str,
+    *,
+    params: dict[str, str] | None = None,
+    timeout: float = ALMANAC_RESOLVE_TIMEOUT_SECONDS,
+    attempts: int = ALMANAC_RESOLVE_ATTEMPTS,
+    retry_delay: RetryDelayFunc = default_exp_backoff
+) -> tuple[int, object | None]
+```
+
+GET ``url`` and return ``(status, parsed JSON body)``.
+
+Retries transient transport failures (timeouts, connection errors) with
+exponential backoff, mirroring ``almanac_api_post`` in registration.py.
+
+
+
+## Resolver Objects[↗](https://github.com/fetchai/uAgents/blob/main/python/src/uagents/resolver.py#L183)
+
+```python
+class Resolver(ABC)
+```
+
+
+
+#### resolve[↗](https://github.com/fetchai/uAgents/blob/main/python/src/uagents/resolver.py#L184)
+```python
+@abstractmethod
+async def resolve(destination: str) -> tuple[str | None, list[str]]
+```
+
+Resolve the destination to an address and endpoint.
+
+**Arguments**:
+
+- `destination` _str_ - The destination name or address to resolve.
+  
+
+**Returns**:
+
+  tuple[str | None, list[str]]: The address (if available) and resolved endpoints.
+
+
+
+## GlobalResolver Objects[↗](https://github.com/fetchai/uAgents/blob/main/python/src/uagents/resolver.py#L198)
+
+```python
+class GlobalResolver(Resolver)
+```
+
+
+
+#### __init__[↗](https://github.com/fetchai/uAgents/blob/main/python/src/uagents/resolver.py#L199)
+```python
+def __init__(max_endpoints: int | None = None,
+             almanac_api_url: str | None = None)
+```
+
+Initialize the GlobalResolver.
+
+**Arguments**:
+
+- `max_endpoints` _int | None_ - The maximum number of endpoints to return.
+- `almanac_api_url` _str | None_ - The url for almanac api
+
+
+
+#### resolve[↗](https://github.com/fetchai/uAgents/blob/main/python/src/uagents/resolver.py#L217)
+```python
+async def resolve(destination: str) -> tuple[str | None, list[str]]
+```
+
+Resolve the destination using the appropriate resolver.
+
+**Arguments**:
+
+- `destination` _str_ - The destination name or address to resolve.
+  
+
+**Returns**:
+
+  tuple[str | None, list[str]]: The address (if available) and resolved endpoints.
+
+
+
+## AlmanacContractResolver Objects[↗](https://github.com/fetchai/uAgents/blob/main/python/src/uagents/resolver.py#L239)
+
+```python
+class AlmanacContractResolver(Resolver)
+```
+
+
+
+#### __init__[↗](https://github.com/fetchai/uAgents/blob/main/python/src/uagents/resolver.py#L240)
+```python
+def __init__(max_endpoints: int | None = None)
+```
+
+Initialize the AlmanacContractResolver.
+
+**Arguments**:
+
+- `max_endpoints` _int | None_ - The maximum number of endpoints to return.
+
+
+
+#### resolve[↗](https://github.com/fetchai/uAgents/blob/main/python/src/uagents/resolver.py#L249)
+```python
+async def resolve(destination: str) -> tuple[str | None, list[str]]
+```
+
+Resolve the destination using the Almanac contract.
+
+**Arguments**:
+
+- `destination` _str_ - The destination address to resolve.
+  
+
+**Returns**:
+
+  tuple[str | None, list[str]]: The address and resolved endpoints.
+
+
+
+## AlmanacApiResolver Objects[↗](https://github.com/fetchai/uAgents/blob/main/python/src/uagents/resolver.py#L294)
+
+```python
+class AlmanacApiResolver(Resolver)
+```
+
+
+
+#### __init__[↗](https://github.com/fetchai/uAgents/blob/main/python/src/uagents/resolver.py#L295)
+```python
+def __init__(max_endpoints: int | None = None,
+             almanac_api_url: str | None = None)
+```
+
+Initialize the AlmanacApiResolver.
+
+**Arguments**:
+
+- `max_endpoints` _int | None_ - The maximum number of endpoints to return.
+- `almanac_api_url` _str | None_ - The url for almanac api
+
+
+
+#### resolve[↗](https://github.com/fetchai/uAgents/blob/main/python/src/uagents/resolver.py#L364)
+```python
+async def resolve(destination: str) -> tuple[str | None, list[str]]
+```
+
+Resolve the destination using the Almanac API.
+If the resolution using API fails, it retries using the Almanac Contract.
+
+**Arguments**:
+
+- `destination` _str_ - The destination address to resolve.
+  
+
+**Returns**:
+
+  tuple[str | None, list[str]]: The address and resolved endpoints.
+
+
+
+## NameServiceResolver Objects[↗](https://github.com/fetchai/uAgents/blob/main/python/src/uagents/resolver.py#L383)
+
+```python
+class NameServiceResolver(Resolver)
+```
+
+
+
+#### __init__[↗](https://github.com/fetchai/uAgents/blob/main/python/src/uagents/resolver.py#L384)
+```python
+def __init__(max_endpoints: int | None = None,
+             almanac_api_url: str | None = None)
+```
+
+Initialize the NameServiceResolver.
+
+**Arguments**:
+
+- `max_endpoints` _int | None_ - The maximum number of endpoints to return.
+
+
+
+#### resolve[↗](https://github.com/fetchai/uAgents/blob/main/python/src/uagents/resolver.py#L446)
+```python
+async def resolve(destination: str) -> tuple[str | None, list[str]]
+```
+
+Resolve the destination using the NameService contract.
+
+**Arguments**:
+
+- `destination` _str_ - The destination name to resolve.
+  
+
+**Returns**:
+
+  tuple[str | None, list[str]]: The address (if available) and resolved endpoints.
+
+
+
+## RulesBasedResolver Objects[↗](https://github.com/fetchai/uAgents/blob/main/python/src/uagents/resolver.py#L483)
+
+```python
+class RulesBasedResolver(Resolver)
+```
+
+
+
+#### __init__[↗](https://github.com/fetchai/uAgents/blob/main/python/src/uagents/resolver.py#L484)
+```python
+def __init__(rules: dict[str, str], max_endpoints: int | None = None)
+```
+
+Initialize the RulesBasedResolver with the provided rules.
+
+**Arguments**:
+
+- `rules` _dict[str, str]_ - A dictionary of rules mapping destinations to endpoints.
+- `max_endpoints` _int | None_ - The maximum number of endpoints to return.
+
+
+
+#### resolve[↗](https://github.com/fetchai/uAgents/blob/main/python/src/uagents/resolver.py#L495)
+```python
+async def resolve(destination: str) -> tuple[str | None, list[str]]
+```
+
+Resolve the destination using the provided rules.
+
+**Arguments**:
+
+- `destination` _str_ - The destination to resolve.
+  
+
+**Returns**:
+
+  tuple[str | None, list[str]]: The address and resolved endpoints.
+

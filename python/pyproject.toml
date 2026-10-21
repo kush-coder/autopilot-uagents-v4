@@ -1,0 +1,101 @@
+[project]
+name = "uagents"
+version = "0.26.1"
+description = "Lightweight framework for rapid agent-based development"
+authors = [
+    { name = "Ed FitzGerald", email = "edward.fitzgerald@fetch.ai" },
+    { name = "James Riehl", email = "james.riehl@fetch.ai" },
+    { name = "Alejandro Morales", email = "alejandro.madrigal@fetch.ai" },
+    { name = "Florian Wilde", email = "florian.wilde@fetch.ai" },
+]
+license = { text = "Apache 2.0" }
+readme = "README.md"
+requires-python = ">=3.10,<4.0"
+dependencies = [
+    "uagents-core (>=0.4.11)",
+    "pydantic (>=2.8,<3.0)",
+    "uvicorn (>=0.30.1,<1.0)",
+    "aiohttp (>=3.8.3,<4.0)",
+    "cosmpy (>=0.12.1)",
+    "cronsim (>=2.7,<3.0)",
+    "tzdata (>=2024.1) ; sys_platform == 'win32'",
+]
+
+[project.optional-dependencies]
+all = [
+    "litellm >=1.78.6,<2.0",
+]
+wallet = []
+llm = ["litellm >=1.78.6,<2.0"]
+
+[project.urls]
+homepage = "https://fetch.ai"
+repository = "https://github.com/fetchai/uAgents"
+documentation = "https://fetch.ai/docs"
+
+[dependency-groups]
+dev = [
+    "aioresponses>=0.7.8,<0.8",
+    "pytest>=8.3.5,<9",
+    "pytest-asyncio>=0.25.3,<0.26",
+    "pytest-order>=1.3.0,<2",
+    "coverage[toml]>=7.6.12,<8",
+    "ruff>=0.11.0,<0.12",
+    "pre-commit>=4.1.0,<5",
+    "pydoc-markdown>=4.8.2,<5",
+]
+
+[build-system]
+requires = ["hatchling>=1.26.0"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/uagents"]
+
+[tool.ruff]
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    # pycodestyle (Errors, Warnings)
+    "E",
+    "W",
+    # Pyflakes
+    "F",
+    # flake8-bugbear
+    "B",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+    # pep8-naming
+    "N",
+    # pylint
+    "PL",
+]
+ignore = ["PLR0913", "PLR0912", "PLR0911", "PLR2004", "PLR0915"]
+
+[tool.ruff.lint.pycodestyle]
+max-line-length = 100
+
+[tool.pytest.ini_options]
+norecursedirs = ["uagents-core"]
+
+[tool.coverage.run]
+source = ["src/uagents", "src\\uagents"]
+omit = ["*/__init__.py", "*/experimental/*"]
+relative_files = true
+
+[tool.coverage.report]
+exclude_also = [
+    'def __repr__',
+    'if self.debug:',
+    'if settings.DEBUG',
+    'raise AssertionError',
+    'raise NotImplementedError',
+    'if 0:',
+    'if __name__ == .__main__.:',
+    'if TYPE_CHECKING:',
+    'class .*\bProtocol\):',
+    '@(abc\.)?abstractmethod',
+]
